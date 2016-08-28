@@ -1,0 +1,122 @@
+#panelTwo {
+	height: 100%;
+	width: 100%;
+}
+
+#searchSide {
+	float: left;
+	width: 45%;
+	height: calc(100% - 40px);
+	padding: 20px;
+	border-right: 1px solid #EEE;
+	background: #EEE;
+}
+
+#searchSide .formBlock {
+	margin-bottom: 100px;
+}
+
+#searchSide .searchPrompt {
+	text-transform: uppercase;
+	font-weight: bold;
+	color: #888;
+	line-height: 21px;
+	text-align: right;
+	text-indent: 5px;
+	background-color: #FFF;
+	direction: rtl;
+}
+
+#searchSide .errorMessage {
+	float: right;
+	clear: both;
+}
+
+#searchSide img {
+	padding: 5px 10px 0px 0px;
+	height: 12px;
+	width: 12px;
+	float: right;
+}
+
+#searchSide input {
+	float: right;
+	clear: right;
+	background: none;
+	border: none;
+	border-bottom: 1px solid #BBB;
+	text-indent: 1px;
+}
+
+#searchSide input:focus {
+	outline: none;
+}
+
+#resultSide {
+	float: right;
+	width: 45%;
+	height: calc(100% - 40px);
+	padding: 20px;
+	border-left: 1px solid #EEE;
+	background: #FFF;
+}
+
+.office p {
+	text-transform: uppercase;
+	font-weight: bold;
+	color: #888;
+	line-height: 21px;
+	text-indent: 5px;
+	background-color: #EEE;
+}
+
+.official {
+	border-bottom: 1px solid #EEE;
+	border-top: 1px solid #EEE;
+	margin: 5px 0px 5px 0px;
+}
+
+.official-name {
+	text-transform: uppercase;
+	line-height: 21px;
+}
+
+.official-name:hover {
+	cursor: pointer;
+}
+
+.official-info {
+	border-top: 1px solid #EEE;
+	padding: 5px;
+}
+
+.official-info img {
+	padding: 1px 2px 2px 8px;
+	height: 13px;
+	width: 13px;
+	float: right;
+}
+
+.official-info img:hover {
+	cursor: pointer;
+}
+
+.official-info p {
+	margin: 2px;
+}
+
+.official-info #export-desc {
+	float: right;
+}
+
+.official-info a {
+	text-decoration: none;
+	text-transform: uppercase;
+	color: #39F;
+	margin: 0px;
+}
+
+.errorMessage {
+	color: #F66;
+	text-transform: uppercase;
+}

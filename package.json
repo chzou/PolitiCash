@@ -1,0 +1,16 @@
+{
+  "name": "polysci-project",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "chartist": "^0.9.8",
+    "express": "^4.14.0",
+    "mongodb": "^2.2.5",
+    "node-xlsx": "^0.7.2",
+    "react": "^15.3.0"
+  }
+}
