@@ -2,6 +2,7 @@ var path = require('path');
 var express = require('express');
 var bodyParser = require('body-parser');
 var https = require('https');
+var http = require('http');
 var fs = require('fs');
 
 var MongoClient = require('mongodb').MongoClient;
@@ -17,14 +18,32 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use('/', express.static(path.join(__dirname, 'app')));
 
-// middleware that (hopefully) ensures zip code is always received
-app.use(function(req, res, next) {
-	console.log(req.body.zipcode);
-	next();
+// Searches MongoDB database for CIDs
+app.post('/api/getcid', function(req, res) {
+	
+	MongoClient.connect(mongoURL, function(err, db) {
+		assert.equal(null, err);
+		console.log('Connected successfully to MongoDB server');
+		
+		//TODO implement this for candidates too
+		//TODO C. A. DUTCH RUPPERSBERGER , ROBERT P. CASEY JR. , E. SCOTT RIGELL returns null
+		db.collection('crpids_memb_114').createIndex({ CRPName: 'text' });
+		db.collection('crpids_memb_114').find(
+			{ $text: { $search: '\"' + req.body.first + '\" \"' + req.body.last + '\"' } },
+			{ _id: false, CID: true, CRPName: true }
+		).limit(1).next(function(err, doc) {
+			var cid = doc.CID;
+			res.send(cid);
+			console.log(cid);
+		});
+		
+		db.close();
+	});
+		
 });
 
 // HTTPS requests for Google Civics API
-app.post('/api/representatives', function(req, res) {
+app.post('/api/googlecivics', function(req, res) {
 	var options = {
 		hostname: 'www.googleapis.com',
 		path: '/civicinfo/v2/representatives?address=' + req.body.zipcode + '&levels=country&roles=legislatorLowerBody&roles=legislatorUpperBody&key=AIzaSyD6waCPOR2fc1XrFTj2iTws9VLIE9a74Fo',
@@ -33,6 +52,7 @@ app.post('/api/representatives', function(req, res) {
 		cert: fs.readFileSync('cert.pem')
 	};
 	var string = '';
+	var output = {};
 	var request = https.request(options, function(data) {
 		console.log('statusCode: ', data.statusCode);
 		data.on('data', function(chunk) {
@@ -81,11 +101,71 @@ var processRepresentatives = function(inputObject) {
 	return outputObj;
 };
 
-MongoClient.connect(mongoURL, function(err, db) {
-	assert.equal(null, err);
-	console.log('Connected successfully to MongoDB server');
-	db.close();
+// HTTPS requests for OpenSecrets API
+app.post('/api/opensecrets', function(req, res) {
+	
+	var output = JSON.parse('{}');
+	var iterateArray = ['candContrib', 'candIndustry', 'candSector'];
+	
+	var check = 0;
+	var processhttp = function(count) {
+		
+		return function(data) {
+			var string = '';
+			console.log('statusCode: ', data.statusCode);
+			data.on('data', function(chunk) {
+				string += chunk;
+			});
+			data.on('end', function() {
+				output[iterateArray[count]] = JSON.parse(string).response;
+				if (check == iterateArray.length - 1) {
+					res.json(processFinances(output));
+					//console.log(JSON.stringify(output));
+				} else {
+					check++;
+				}
+			});
+		};
+		
+	};
+	
+	for (var i = 0; i < iterateArray.length; i++) {
+		var method = iterateArray[i];
+		var options = {
+			hostname: 'www.opensecrets.org',
+			path: '/api/?method=' + method + '&cid=' + req.body.cid + '&output=json&apikey=ed5ee740eb24aed077cb205d563be6bd'
+		};
+		http.get(options, processhttp(i));
+	}
+	
 });
+
+var processFinances = function(inputObject) {
+	
+	// strips unnecessary containers
+	inputObject.candContrib = inputObject.candContrib.contributors.contributor;
+	inputObject.candIndustry = inputObject.candIndustry.industries.industry;
+	inputObject.candSector = inputObject.candSector.sectors.sector;
+
+	var outputObj = JSON.parse('{}');
+	
+	// strips unnecessary '@attributes' containers
+	outputObj.candContrib = [];
+	for (var i = 0; i < inputObject.candContrib.length; i++) {
+		outputObj.candContrib.push(inputObject.candContrib[i]['@attributes']);
+	}
+	outputObj.candIndustry = [];
+	for (var j = 0; j < inputObject.candIndustry.length; j++) {
+		outputObj.candIndustry.push(inputObject.candIndustry[j]['@attributes']);
+	}
+	outputObj.candSector = [];
+	for (var k = 0; k < inputObject.candSector.length; k++) {
+		outputObj.candSector.push(inputObject.candSector[k]['@attributes']);
+	}
+	
+	return outputObj;
+	
+};
 
 app.listen(port);
 console.log('Server started: http://localhost:' + app.get('port') + '/');

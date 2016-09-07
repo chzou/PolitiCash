@@ -1,0 +1,101 @@
+#panelThree {
+	height: calc(100% - 30px);
+	width: calc(100% - 10px);
+	overflow-y: scroll;
+	border-top: 15px solid #FFF;
+	border-bottom: 15px solid #FFF;
+	border-left: 5px solid #FFF;
+	border-right: 5px solid #FFF;
+}
+
+#placeholder {
+	position: absolute;
+	top: 150px;
+	left: 0px;
+	right: 0px;
+	margin: auto;
+	width: 294px;
+	height: 124px;
+	background: #EEE;
+}
+
+#placeholder div {
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	margin: 7px auto;
+	width: 250px;
+	height: 80px;
+	background: #EEE;
+	padding: 15px;
+	border: 1px solid #FFF;
+}
+
+#placeholder h1 {
+	text-transform: uppercase;
+	font-size: 11px;
+	font-weight: bold;
+	color: #888;
+	line-height: 21px;
+	text-align: left;
+	text-indent: 5px;
+	background-color: #FFF;
+}
+
+.panelHeading {
+	text-transform: uppercase;
+	font-weight: bold;
+	color: #888;
+	line-height: 21px;
+	text-indent: 5px;
+	background-color: #EEE;
+}
+
+.chartTitle {
+	border-bottom: 1px solid #EEE;
+	border-top: 1px solid #EEE;
+	margin: 5px 0px 5px 0px;
+	text-transform: uppercase;
+	line-height: 21px;
+}
+
+.contribChart {
+	margin: 5px 10px 20px 10px;
+	height: 350px;
+}
+
+.contribChart .ct-bar {
+	stroke-width: 10px;
+}
+
+.ct-series.ct-series-a .ct-bar {
+	stroke: #5bc0de;
+}
+
+.ct-label.ct-vertical {
+	color: #888;
+	font-size: 11px;
+	/*text-transform: uppercase;*/
+}
+
+.ct-label.ct-horizontal {
+	color: #888;
+	font-size: 11px;
+}
+
+.ct-label.ct-horizontal.ct-end {
+    display: inline-block;
+    width: auto !important;
+	transform-origin: 100% 0;
+	transform: rotate(-30deg) translateX(-50%) translateY(-60%);
+}
+
+.sectorChart {
+	margin: 5px 10px 20px 10px;
+	height: 350px;
+}
+
+.sectorChart .ct-label {
+	fill: #888;
+	font-size: 11px;
+}
