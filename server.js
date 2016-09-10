@@ -120,7 +120,6 @@ app.post('/api/opensecrets', function(req, res) {
 				output[iterateArray[count]] = JSON.parse(string).response;
 				if (check == iterateArray.length - 1) {
 					res.json(processFinances(output));
-					//console.log(JSON.stringify(output));
 				} else {
 					check++;
 				}
@@ -163,6 +162,7 @@ var processFinances = function(inputObject) {
 		outputObj.candSector.push(inputObject.candSector[k]['@attributes']);
 	}
 	
+	console.log(JSON.stringify(outputObj));
 	return outputObj;
 	
 };

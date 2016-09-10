@@ -408,6 +408,7 @@ var PanelThree = React.createClass({
 					<p className='panelHeading'>{this.props.name}</p>
 					<IndividualDonors data={JSON.stringify(this.state.contribResults)} />
 					<SectorDonors data={JSON.stringify(this.state.sectorResults)} />
+					<IndustryDonors data={JSON.stringify(this.state.industryResults)} />
 				</div>
 			);
 		} else {
@@ -479,7 +480,34 @@ var SectorDonors = React.createClass({
 			<div>
 				<p className='chartTitle'>Top Sectors</p>
 				<PieChart data={this.processData()} chartName="sectorChart" />
-				<ListChart />
+				<ListChart data={this.processData()} />
+			</div>
+		);
+	}
+});
+
+var IndustryDonors = React.createClass({
+	processData: function() {
+		var data = {
+			labels: [],
+			series: []
+		};
+		
+		var prop = JSON.parse(this.props.data);
+		for (var i = 0; i < prop.length; i++) {
+			var industry = JSON.parse(JSON.stringify(prop[i]));
+			data.labels.push(industry.industry_name);
+			data.series.push(parseInt(industry.total));
+		}
+		
+		return data;
+	},
+	render: function() {
+		return (
+			<div>
+				<p className='chartTitle'>Top Industries</p>
+				<PieChart data={this.processData()} chartName='industryChart' />
+				<ListChart data={this.processData()} />
 			</div>
 		);
 	}
@@ -501,11 +529,29 @@ var PieChart = React.createClass({
 			labelOffset: 90,
 			labelDirection: 'explode'
 		};
-		return new Chartist.Pie('.' + this.props.chartName, data, options);
+		var chart = new Chartist.Pie('.' + this.props.chartName, data, options);
+		chart.on('draw', function() {
+			$('.ct-slice-pie').mouseenter(function() {
+				$('#tooltip2').removeClass('tooltip-hidden');
+				$('#tooltip2').html(Math.round($(this).attr('ct:value') / total * 10000) / 100 + '<b> %</b>');
+			});
+			$('.ct-slice-pie').mouseleave(function() {
+				$('#tooltip2').addClass('tooltip-hidden');
+			});
+			$('.ct-slice-pie').mousemove(function(event) {
+				$('#tooltip2').css({
+					left: event.pageX - $('#tooltip2').width() * 5,
+					top: event.pageY - $('#tooltip2').height() - 10
+				})
+			});
+		});
+		return chart;
 	},
 	render: function() {
 		return (
-			<div className={this.props.chartName}></div>
+			<div className={this.props.chartName}>
+				<div id='tooltip2' className='tooltip tooltip-hidden'></div>
+			</div>
 		);
 	}
 });
@@ -521,19 +567,65 @@ var BarChart = React.createClass({
 			horizontalBars: true,
 			axisY: { offset: 200 }
 		};
-		return new Chartist.Bar('.' + this.props.chartName, data, options);
+		var chart = new Chartist.Bar('.' + this.props.chartName, data, options);
+		chart.on('draw', function() {
+			$('.ct-bar').mouseenter(function() {
+				$('#tooltip1').removeClass('tooltip-hidden');
+				$('#tooltip1').html('<b>$ </b>' + $(this).attr('ct:value'));
+			});
+			$('.ct-bar').mouseleave(function() {
+				$('#tooltip1').addClass('tooltip-hidden');
+			});
+			$('.ct-bar').mousemove(function(event) {
+				$('#tooltip1').css({
+					left: event.pageX - $('#tooltip1').width() * 5,
+					top: event.pageY - $('#tooltip1').height() - 10
+				});
+			});
+			$('.ct-label.ct-vertical').hover(function() {
+				$(this).html('<a href=\'http://www.google.com/search?q=' + $(this).text().replace('&', '%26') + '\'>' + $(this).html() + '<\a>');
+			});
+		});
+		return chart;
 	},
 	render: function() {
 		return (
-			<div className={this.props.chartName}></div>
+			<div>
+				<div className={this.props.chartName}>
+					<div id='tooltip1' className='tooltip tooltip-hidden'></div>
+				</div>
+			</div>
 		);
 	}
 });
 
 var ListChart = React.createClass({
 	render: function() {
+		var labelArray = this.props.data.labels;
+		var items = labelArray.map(function(label) {
+			return (
+				<LegendItem index={labelArray.indexOf(label)}>
+					{label}
+				</LegendItem>
+			);
+		});
+		
 		return (
-			<div>List Chart </div>
+			<div className='list-legend'>
+				{items}
+			</div>
+		);
+	}
+});
+
+var LegendItem = React.createClass({
+	render: function() {
+		var names = 'legend-square legend-series-' + this.props.index;
+		return(
+			<div>
+				<div className={names}></div>
+				<p>{this.props.children}</p>
+			</div>
 		);
 	}
 });
