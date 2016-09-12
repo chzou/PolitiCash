@@ -54,7 +54,19 @@ class PanelTwo extends React.Component {
 	}
 	
 	getRepresentativesByName(d) {
-		// TODO
+		$.ajax({
+			url: '/api/repbyname',
+			dataType: 'json',
+			type: 'POST',
+			data: d,
+			success: function(returned, status, xhr) {
+				this.setState({errorMsg: '', results: returned});
+			}.bind(this),
+			error: function(xhr, status, err) {
+				console.error('/api/repbyname', status, err.toString());
+				this.setState({errorMsg: 'Error: ' + err.toString()});
+			}.bind(this)
+		});
 	}
 	
 	render() {

@@ -202,7 +202,8 @@ class PieChart extends React.Component {
 		chart.on('draw', function() {
 			$('.ct-slice-pie').mouseenter(function() {
 				$('#tooltip2').removeClass('tooltip-hidden');
-				$('#tooltip2').html(Math.round($(this).attr('ct:value') / total * 10000) / 100 + '<b> %</b>');
+				$('#tooltip2').html('<b>$ </b>' + $(this).attr('ct:value') + '<br>('
+									+ Math.round($(this).attr('ct:value') / total * 10000) / 100 + '<b>%</b>)');
 			});
 			$('.ct-slice-pie').mouseleave(function() {
 				$('#tooltip2').addClass('tooltip-hidden');

@@ -23,7 +23,6 @@ app.post('/api/getcid', function(req, res) {
 	
 	MongoClient.connect(mongoURL, function(err, db) {
 		assert.equal(null, err);
-		console.log('Connected successfully to MongoDB server');
 		
 		//TODO implement this for candidates too
 		//TODO C. A. DUTCH RUPPERSBERGER , ROBERT P. CASEY JR. , E. SCOTT RIGELL returns null
@@ -54,7 +53,7 @@ app.post('/api/googlecivics', function(req, res) {
 	var string = '';
 	var output = {};
 	var request = https.request(options, function(data) {
-		console.log('statusCode: ', data.statusCode);
+		//console.log('statusCode: ', data.statusCode);
 		data.on('data', function(chunk) {
 			string += chunk;
 		});
@@ -63,7 +62,7 @@ app.post('/api/googlecivics', function(req, res) {
 				try {
 					output = processRepresentatives(JSON.parse(string));
 					res.json(output);
-					console.log(JSON.stringify(output));
+					//console.log(JSON.stringify(output));
 				}
 				catch (err) {
 					res.statusCode = 500;
@@ -79,6 +78,11 @@ app.post('/api/googlecivics', function(req, res) {
 		});
 	});
 	request.end();
+});
+
+// TODO
+app.post('/api/repbyname', function(req, res) {
+	
 });
 
 // TODO: continue formatting this
@@ -101,8 +105,48 @@ var processRepresentatives = function(inputObject) {
 	return outputObj;
 };
 
-// HTTPS requests for OpenSecrets API
 app.post('/api/opensecrets', function(req, res) {
+	
+	MongoClient.connect(mongoURL, function(err, db) {
+		assert.equal(null, err);
+		
+		var time = Date.now() - 1209600000; // returns time two weeks ago
+		var cursor = db.collection('finances').find(
+			{cid: req.body.cid, timestamp: { $gt: time }}	
+		);
+		
+		cursor.next(function(err, doc) {
+			assert.equal(null, err);
+			if (doc !== null) {
+				console.log('found existing entry');
+				db.close();
+				res.json(doc);
+			} else {
+				console.log('launching new http request');
+				newFinanceRequest(req.body.cid, function(newEntry) {
+					newEntry.cid = req.body.cid;
+					newEntry.timestamp = Date.now() / 1;
+					try {
+						db.collection('finances').update(
+							{cid: req.body.cid},
+							newEntry,
+							{upsert: true}
+						);
+					} catch(err) {
+						console.log(err);
+					}
+					db.close();
+					res.json(newEntry);
+				});
+			}
+		});
+		
+	});
+			
+});
+
+// HTTPS requests for OpenSecrets API
+var newFinanceRequest = function(cid, callback) {
 	
 	var output = JSON.parse('{}');
 	var iterateArray = ['candContrib', 'candIndustry', 'candSector'];
@@ -119,7 +163,7 @@ app.post('/api/opensecrets', function(req, res) {
 			data.on('end', function() {
 				output[iterateArray[count]] = JSON.parse(string).response;
 				if (check == iterateArray.length - 1) {
-					res.json(processFinances(output));
+					callback( processFinances(output) );
 				} else {
 					check++;
 				}
@@ -132,12 +176,12 @@ app.post('/api/opensecrets', function(req, res) {
 		var method = iterateArray[i];
 		var options = {
 			hostname: 'www.opensecrets.org',
-			path: '/api/?method=' + method + '&cid=' + req.body.cid + '&output=json&apikey=ed5ee740eb24aed077cb205d563be6bd'
+			path: '/api/?method=' + method + '&cid=' + cid + '&output=json&apikey=ed5ee740eb24aed077cb205d563be6bd'
 		};
 		http.get(options, processhttp(i));
 	}
 	
-});
+};
 
 var processFinances = function(inputObject) {
 	
@@ -162,7 +206,7 @@ var processFinances = function(inputObject) {
 		outputObj.candSector.push(inputObject.candSector[k]['@attributes']);
 	}
 	
-	console.log(JSON.stringify(outputObj));
+	//console.log(JSON.stringify(outputObj));
 	return outputObj;
 	
 };
