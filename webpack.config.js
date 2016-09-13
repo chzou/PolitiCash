@@ -1,32 +1,39 @@
 var webpack = require('webpack');
 var path = require('path');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var BUILD_DIR = path.resolve(__dirname, 'app/public');
 var APP_DIR = path.resolve(__dirname, 'app/scripts');
+var STYLE_DIR = path.resolve(__dirname, 'app/stylesheets');
 
 var config = {
     entry: APP_DIR + '/main.jsx',
     output: {
         path: BUILD_DIR,
-        filename: 'bundle.js'
+        publicPath: './public/',
+        filename: 'bundle.js',
     },
     module: {
         loaders: [
             {
-                test: /\.css/,
-                loader: ExtractTextPlugin.extract('css')
+                test: /\.css$/,
+                include: STYLE_DIR,
+                loader: 'style-loader!css-loader'
             },
             {
                 test: /\.jsx?/,
                 include: APP_DIR,
                 loader: 'babel'
+            },
+            {
+                test: /\.png$/,
+                loader: 'url-loader?limit=100000'
+            },
+            {
+                test: /\.jpg$/,
+                loader: 'file-loader'
             }
         ]
-    },
-    plugins: [
-        new ExtractTextPlugin('styles.css')
-    ]
+    }
 };
 
 module.exports = config;

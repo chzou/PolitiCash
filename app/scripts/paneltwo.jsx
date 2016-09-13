@@ -1,4 +1,6 @@
 import React from 'react';
+import $ from 'jquery';
+import '../stylesheets/paneltwo.css';
 
 class PanelTwo extends React.Component {
 	

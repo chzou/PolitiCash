@@ -25,7 +25,7 @@ app.post('/api/getcid', function(req, res) {
 		assert.equal(null, err);
 		
 		//TODO implement this for candidates too
-		//TODO C. A. DUTCH RUPPERSBERGER , ROBERT P. CASEY JR. , E. SCOTT RIGELL returns null
+		//TODO MICHAEL K. SIMPSON , C. A. DUTCH RUPPERSBERGER , ROBERT P. CASEY JR. , E. SCOTT RIGELL returns null
 		db.collection('crpids_memb_114').createIndex({ CRPName: 'text' });
 		db.collection('crpids_memb_114').find(
 			{ $text: { $search: '\"' + req.body.first + '\" \"' + req.body.last + '\"' } },
@@ -184,6 +184,8 @@ var newFinanceRequest = function(cid, callback) {
 };
 
 var processFinances = function(inputObject) {
+	
+	console.log(JSON.stringify(inputObject.candContrib.contributors));
 	
 	// strips unnecessary containers
 	inputObject.candContrib = inputObject.candContrib.contributors.contributor;

@@ -3,6 +3,7 @@ import {render} from 'react-dom';
 import PanelTwo from './paneltwo.jsx';
 import PanelOne from './panelone.jsx';
 import PanelThree from './panelthree.jsx';
+import '../stylesheets/main.css';
 
 class Content extends React.Component {
 	
@@ -31,9 +32,6 @@ class Content extends React.Component {
 				<PanelOne changeSelection={this.changeSelectionOne} />
 				<PanelTwo changeSelection={this.changeSelectionTwo} />
 				<PanelThree name={this.state.name} cid={this.state.cid} />
-				<Panel>
-					This is the content of Panel 4.
-				</Panel>
 			</Tabs>
 		);
 	}
@@ -54,15 +52,22 @@ class Tabs extends React.Component {
 		return(
 			<div id="firstContainer">
 				<div id="navigation">
-					<Tab selected={(this.props.selection == 0)} id={0} changeSelection={this.changeSelection}>Home</Tab>
-					<Tab selected={(this.props.selection == 1)} id={1} changeSelection={this.changeSelection}>Candidate Lookup</Tab>
-					<Tab selected={(this.props.selection == 2)} id={2} changeSelection={this.changeSelection}>By Candidate</Tab>
-					<Tab selected={(this.props.selection == 3)} id={3} changeSelection={this.changeSelection}>By Party</Tab>
+					<Tab selected={(this.props.selection == 0)} id={0} changeSelection={this.changeSelection}>
+						Home
+					</Tab>
+					<Tab selected={(this.props.selection == 1)} id={1} changeSelection={this.changeSelection}>
+						Candidate Lookup
+					</Tab>
+					<Tab selected={(this.props.selection == 2)} id={2} changeSelection={this.changeSelection}>
+						By Candidate
+					</Tab>
 				</div>
 				<div className="panel">
 					{this.props.children[this.props.selection]}
 				</div>
-				<div id="bottomBar"></div>
+				<div id="bottomBar">
+					<p>Data is from Center for Responsive Politics</p>
+				</div>
 			</div>
 		);
 	}
@@ -91,16 +96,6 @@ class Tab extends React.Component {
 		);
 	}
 }
-
-class Panel extends React.Component {
-	render() {
-		return(
-			<div>
-				{this.props.children}
-			</div>
-		);
-	}
-};
 
 render(
 	<Content />,

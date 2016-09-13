@@ -1,5 +1,7 @@
 import React from 'react';
 import Chartist from 'chartist';
+import $ from 'jquery';
+import '../stylesheets/panelthree.css';
 
 class PanelThree extends React.Component {
 	
@@ -44,8 +46,8 @@ class PanelThree extends React.Component {
 				<div id='panelThree'>
 					<p className='panelHeading'>{this.props.name}</p>
 					<IndividualDonors data={JSON.stringify(this.state.contribResults)} />
-					<SectorDonors data={JSON.stringify(this.state.sectorResults)} />
 					<IndustryDonors data={JSON.stringify(this.state.industryResults)} />
+					<SectorDonors data={JSON.stringify(this.state.sectorResults)} />
 				</div>
 			);
 		} else {
@@ -97,6 +99,12 @@ class IndividualDonors extends React.Component {
 		return (
 			<div>
 				<p className='chartTitle'>Top Contributors</p>
+				<p className='disclaimerText'>
+					NOTE: The organizations themselves did not donate,
+					rather the money came from the organization's PAC,
+					its individual members or employees or owners,
+					and those individuals' immediate families.
+				</p>
 				<BarChart data={this.processData()} chartName="contribChart" />
 			</div>
 		);
@@ -150,14 +158,14 @@ class IndustryDonors extends React.Component {
 	processData() {
 		var data = {
 			labels: [],
-			series: []
+			series: [[]]
 		};
 		
 		var prop = JSON.parse(this.props.data);
 		for (var i = 0; i < prop.length; i++) {
 			var industry = JSON.parse(JSON.stringify(prop[i]));
 			data.labels.push(industry.industry_name);
-			data.series.push(parseInt(industry.total));
+			data.series[0].push(parseInt(industry.total));
 		}
 		
 		return data;
@@ -167,8 +175,7 @@ class IndustryDonors extends React.Component {
 		return (
 			<div>
 				<p className='chartTitle'>Top Industries</p>
-				<PieChart data={this.processData()} chartName='industryChart' />
-				<ListChart data={this.processData()} />
+				<BarChart data={this.processData()} chartName='industryChart' />
 			</div>
 		);
 	}
@@ -192,7 +199,7 @@ class PieChart extends React.Component {
 		});
 		var options = {
 			labelInterpolationFnc: function(label, index) {
-				return data.series[index] / total > 0.02 ? label : '';
+				return data.series[index] / total > 0.025 ? label : '';
 			},
 			chartPadding: 30,
 			labelOffset: 90,
@@ -210,7 +217,7 @@ class PieChart extends React.Component {
 			});
 			$('.ct-slice-pie').mousemove(function(event) {
 				$('#tooltip2').css({
-					left: event.pageX - $('#tooltip2').width() * 5,
+					left: event.pageX - $('#tooltip2').width() * 4.5,
 					top: event.pageY - $('#tooltip2').height() - 10
 				})
 			});
@@ -257,7 +264,7 @@ class BarChart extends React.Component {
 			});
 			$('.ct-bar').mousemove(function(event) {
 				$('#tooltip1').css({
-					left: event.pageX - $('#tooltip1').width() * 5,
+					left: event.pageX - $('#tooltip1').width() * 4.5,
 					top: event.pageY - $('#tooltip1').height() - 10
 				});
 			});
