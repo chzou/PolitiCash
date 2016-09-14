@@ -31,7 +31,22 @@ class PanelOne extends React.Component {
 					<br />
 				</p>
 				<p>
-					
+					It's no secret -- money affects politics. Politicians rely on campaign contributions to win
+					elections, and there is a strong correlation between a representative's contributions and voting
+					record. Find out which individuals, industries, and special interest groups are bankrolling
+					your representatives.
+				</p>
+				<p>
+					To use this app, use the <b>Candidate Lookup</b> tab (above) or
+					simply click <b>Enter</b> (below). Enter your zip code to find representatives,
+					and select <b>View Financial History</b> for financial information.
+				</p>
+				<p>
+					<b>NOTE:</b> This app is not a deep research tool. Instead, it is intended to make political
+					data more visual and easily-accessible.
+				</p>
+				<p>
+					Created using HTML/CSS, Javascript, React, Node.js, and MongoDB.
 				</p>
 				</div>
 				<div id="title">United States of $$$</div>

@@ -33,7 +33,7 @@ app.post('/api/getcid', function(req, res) {
 		).limit(1).next(function(err, doc) {
 			var cid = doc.CID;
 			res.send(cid);
-			console.log(cid);
+			//console.log(cid);
 		});
 		
 		db.close();
@@ -118,11 +118,11 @@ app.post('/api/opensecrets', function(req, res) {
 		cursor.next(function(err, doc) {
 			assert.equal(null, err);
 			if (doc !== null) {
-				console.log('found existing entry');
+				//console.log('found existing entry');
 				db.close();
 				res.json(doc);
 			} else {
-				console.log('launching new http request');
+				//console.log('launching new http request');
 				newFinanceRequest(req.body.cid, function(newEntry) {
 					newEntry.cid = req.body.cid;
 					newEntry.timestamp = Date.now() / 1;
@@ -156,7 +156,7 @@ var newFinanceRequest = function(cid, callback) {
 		
 		return function(data) {
 			var string = '';
-			console.log('statusCode: ', data.statusCode);
+			//console.log('statusCode: ', data.statusCode);
 			data.on('data', function(chunk) {
 				string += chunk;
 			});
@@ -184,9 +184,7 @@ var newFinanceRequest = function(cid, callback) {
 };
 
 var processFinances = function(inputObject) {
-	
-	console.log(JSON.stringify(inputObject.candContrib.contributors));
-	
+		
 	// strips unnecessary containers
 	inputObject.candContrib = inputObject.candContrib.contributors.contributor;
 	inputObject.candIndustry = inputObject.candIndustry.industries.industry;
@@ -208,7 +206,6 @@ var processFinances = function(inputObject) {
 		outputObj.candSector.push(inputObject.candSector[k]['@attributes']);
 	}
 	
-	//console.log(JSON.stringify(outputObj));
 	return outputObj;
 	
 };
