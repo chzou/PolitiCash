@@ -7,7 +7,7 @@ var fs = require('fs');
 
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
-var mongoURL = 'mongodb://127.0.0.1:27017/polysci-proj';
+var mongoURL = 'mongodb://user:pass@ds021326.mlab.com:21326/polysci-proj';
 
 var app = express();
 
