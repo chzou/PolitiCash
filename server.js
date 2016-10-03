@@ -11,7 +11,7 @@ var mongoURL = 'mongodb://user:pass@ds021326.mlab.com:21326/polysci-proj';
 
 var app = express();
 
-var port = 3000;
+var port = process.env.PORT || 3000;
 
 app.set('port', port);
 app.use(bodyParser.json());
