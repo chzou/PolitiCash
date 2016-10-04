@@ -82,9 +82,60 @@ app.post('/api/repbyzip', function(req, res) {
 	
 });
 
-// TODO
 app.post('/api/repbyname', function(req, res) {
 	
+	var options1 = {
+		hostname: 'whoismyrepresentative.com',
+		path: '/getall_reps_byname.php?name=' + req.body.name + '&output=json'
+	};	
+	var string1 = '';
+	var output1 = JSON.parse('{"data": []}');
+
+	var request = http.request(options1, function(data) {		
+		data.on('data', function(chunk) {
+			string1 += chunk;
+		});
+		data.on('end', function() {
+			try {
+				output1 = processRepresentatives(JSON.parse(string1));
+			}
+			catch (err) {	}
+		});
+	});
+	request.end();
+		
+	var options2 = {
+		hostname: 'whoismyrepresentative.com',
+		path: '/getall_sens_byname.php?name=' + req.body.name + '&output=json'
+	};
+	var string2 = '';
+	var output2 = JSON.parse('{"data": []}');
+
+	request = http.request(options2, function(data) {
+		data.on('data', function(chunk) {
+			string2 += chunk;
+		});
+		data.on('end', function() {
+			try {
+				output2 = processRepresentatives(JSON.parse(string2));
+			}
+			catch (err) {	}
+			
+			var output = {};
+			// TODO: MAKE SURE THIS TRIGGERS AFTER EVERYTHING ELSE
+			output.data = output1.data.concat(output2.data);
+			if (JSON.stringify(output).length < 15) {
+				res.statusCode = 500;
+				res.statusMessage = "Invalid name";
+				res.send();
+			} else {
+				res.json(output);
+				//console.log(JSON.stringify(output));
+			}
+		});
+	});
+	request.end();
+
 });
 
 var processRepresentatives = function(inputObject) {

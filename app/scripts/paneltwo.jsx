@@ -7,11 +7,13 @@ class PanelTwo extends React.Component {
 	constructor() {
 		super();
 		this.state = {
-			errorMsg: '',
+			errorMsg1: '',
+			errorMsg2: '',
 			results: {}
 		};
 		this.changeSelection = this.changeSelection.bind(this);
-		this.changeErrorMessage = this.changeErrorMessage.bind(this);
+		this.changeErrorMessage1 = this.changeErrorMessage1.bind(this);
+		this.changeErrorMessage2 = this.changeErrorMessage2.bind(this);
 		this.getRepresentativesByZip = this.getRepresentativesByZip.bind(this);
 		this.getRepresentativesByName = this.getRepresentativesByName.bind(this);
 	}
@@ -35,10 +37,14 @@ class PanelTwo extends React.Component {
 		});
 	}
 	
-	changeErrorMessage(msg) {
-		this.setState({errorMsg: msg});
+	changeErrorMessage1(msg) {
+		this.setState({errorMsg1: msg});
 	}
-		
+	
+	changeErrorMessage2(msg) {
+		this.setState({errorMsg2: msg});
+	}
+	
 	getRepresentativesByZip(d) {
 		$.ajax({
 			url: '/api/repbyzip',
@@ -46,11 +52,11 @@ class PanelTwo extends React.Component {
 			type: 'POST',
 			data: d,
 			success: function(returned, status, xhr) {
-				this.setState({errorMsg: '', results: returned});
+				this.setState({errorMsg1: '', results: returned});
 			}.bind(this),
 			error: function(xhr, status, err) {
 				console.error('/api/googlecivics', status, err.toString());
-				this.setState({errorMsg: 'Error: ' + err.toString()});
+				this.setState({errorMsg1: 'Error: ' + err.toString()});
 			}.bind(this)
 		});
 	}
@@ -62,11 +68,11 @@ class PanelTwo extends React.Component {
 			type: 'POST',
 			data: d,
 			success: function(returned, status, xhr) {
-				this.setState({errorMsg: '', results: returned});
+				this.setState({errorMsg2: '', results: returned});
 			}.bind(this),
 			error: function(xhr, status, err) {
 				console.error('/api/repbyname', status, err.toString());
-				this.setState({errorMsg: 'Error: ' + err.toString()});
+				this.setState({errorMsg2: 'Error: ' + err.toString()});
 			}.bind(this)
 		});
 	}
@@ -75,10 +81,12 @@ class PanelTwo extends React.Component {
 		return (
 			<div id="panelTwo">
 				<SearchSide
-					errorMsg={this.state.errorMsg}
+					errorMsg1={this.state.errorMsg1}
+					errorMsg2={this.state.errorMsg2}
 					changeZip={this.getRepresentativesByZip}
 					changeName={this.getRepresentativesByName}
-					changeErrorMessage={this.changeErrorMessage}
+					changeErrorMessage1={this.changeErrorMessage1}
+					changeErrorMessage2={this.changeErrorMessage2}
 				/>
 				<ResultSide
 					changeSelection={this.changeSelection}
@@ -103,7 +111,7 @@ class SearchSide extends React.Component {
 		var zip = $('#searchZip').val();
 		$('#searchZip').val('');
 		if (zip.length != 5) {
-			this.props.changeErrorMessage("Error: Invalid zip code");
+			this.props.changeErrorMessage1("Error: Invalid zip code");
 			return;
 		}
 		this.props.changeZip({zipcode: zip});
@@ -125,14 +133,15 @@ class SearchSide extends React.Component {
 						<input type="text" id="searchZip" placeholder="" />
 						<img src="./images/search.png" />
 					</form>
-					<p className="errorMessage">{this.props.errorMsg}</p>
+					<p className="errorMessage">{this.props.errorMsg1}</p>
 				</div>
 				<div className='formBlock'>
 					<form onSubmit={this.handleSubmitName}>
-						<p className="searchPrompt">Or search directly by name here</p>
+						<p className="searchPrompt">Or search directly by last name here</p>
 						<input type="text" id="searchName" placeholder="" />
 						<img src="./images/search.png" />
 					</form>
+					<p className="errorMessage">{this.props.errorMsg2}</p>
 				</div>
 			</div>
 		);
