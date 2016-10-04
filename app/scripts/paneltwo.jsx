@@ -38,10 +38,10 @@ class PanelTwo extends React.Component {
 	changeErrorMessage(msg) {
 		this.setState({errorMsg: msg});
 	}
-	
+		
 	getRepresentativesByZip(d) {
 		$.ajax({
-			url: '/api/googlecivics',
+			url: '/api/repbyzip',
 			dataType: 'json',
 			type: 'POST',
 			data: d,
@@ -158,9 +158,9 @@ class ResultSide extends React.Component {
 			var processTwo = office.officials.map(function(official) {
 				official = JSON.parse(JSON.stringify(official)); // redefine JSON object
 				var officialUrl, officialPhone;
-				try { officialUrl = official.urls[0];
+				try { officialUrl = official.link;
 				} catch(err) { officialUrl = ''; }
-				try { officialPhone = official.phones[0];
+				try { officialPhone = official.phone;
 				} catch(err) { officialPhone = ''; }
 				return (
 					<OfficialInfo
@@ -188,7 +188,7 @@ class ResultSide extends React.Component {
 		);
 
 	}
-	
+		
 	render() {
 		return (
 			<div id="resultSide">

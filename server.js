@@ -41,19 +41,18 @@ app.post('/api/getcid', function(req, res) {
 		
 });
 
-// HTTPS requests for Google Civics API
-app.post('/api/googlecivics', function(req, res) {
+app.post('/api/repbyzip', function(req, res) {
+	
 	var options = {
-		hostname: 'www.googleapis.com',
-		path: '/civicinfo/v2/representatives?address=' + req.body.zipcode + '&levels=country&roles=legislatorLowerBody&roles=legislatorUpperBody&key=AIzaSyD6waCPOR2fc1XrFTj2iTws9VLIE9a74Fo',
-		method: 'GET',
-		key: fs.readFileSync('key.pem'),
-		cert: fs.readFileSync('cert.pem')
+		hostname: 'whoismyrepresentative.com',
+		path: '/getall_mems.php?zip=' + req.body.zipcode + '&output=json'
 	};
+	
 	var string = '';
 	var output = {};
-	var request = https.request(options, function(data) {
-		//console.log('statusCode: ', data.statusCode);
+
+	var request = http.request(options, function(data) {
+		
 		data.on('data', function(chunk) {
 			string += chunk;
 		});
@@ -76,8 +75,11 @@ app.post('/api/googlecivics', function(req, res) {
 				res.send();
 			}
 		});
+
 	});
+	
 	request.end();
+	
 });
 
 // TODO
@@ -85,21 +87,26 @@ app.post('/api/repbyname', function(req, res) {
 	
 });
 
-// TODO: continue formatting this
 var processRepresentatives = function(inputObject) {
 	var outputObj = JSON.parse('{"data": []}');
 	var outputArray = [];
-	for (var i=0; i<inputObject.offices.length; i++) {
-		var office = inputObject.offices[i];
-		var tempArray = [];
-		for (var j=0; j<office.officialIndices.length; j++) {
-			tempArray.push(inputObject.officials[office.officialIndices[j]]);
+	for (var i = 0; i < inputObject.results.length; i++) {
+		
+		var rep = inputObject.results[i];
+		var state = rep.state;
+		var district = rep.district;
+		var office;
+		if (parseInt(district)) {
+			office = "United States House of Representatives " + state + "-" + district;
+		} else {
+			office = "United States Senate " + district;
 		}
-		var tempJSON = {
-			name: office.name,
-			officials: tempArray
-		};
-		outputArray.push(tempJSON);
+		
+		outputArray.push({
+			name: office,
+			officials: [ rep ]
+		});
+				
 	}
 	outputObj.data = outputArray;
 	return outputObj;
