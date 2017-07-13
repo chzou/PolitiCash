@@ -7,3 +7,5 @@ bankrolling your representatives. Created using HTML/CSS, Javascript, React, Nod
 
 This app is not a deep research tool. Instead, it is intended to make political data more
 visual and easily-accessible.
+
+https://politicash.herokuapp.com/
